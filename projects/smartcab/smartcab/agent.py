@@ -45,9 +45,18 @@ class LearningAgent(Agent):
             self.epsilon = 0
             self.alpha = 0
         else:
-           # self.epsilon = self.epsilon - 0.05
-            a = 0.97
-            self.epsilon = 1.0 * a ** self.trial
+            #self.epsilon = self.epsilon - 0.05
+            #a_alpha = 0.97
+            a_epsilon = 0.97
+            n = 50
+            if self.trial <= n:
+                self.epsilon = 0.75
+            else:
+                self.epsilon = 1-math.exp(-a_epsilon ** (self.trial - n))
+                #self.epsilon = self.epsilon - 0.005
+
+            #self.alpha = math.cos(a_alpha ** self.trial)
+            self.alpha = 0.75
 
         return None
 
@@ -71,7 +80,9 @@ class LearningAgent(Agent):
         # With the hand-engineered features, this learning process gets entirely negated.
 
         # Set 'state' as a tuple of relevant data for the agent
-        state = (waypoint, int(deadline/15), inputs['light'], inputs['left'])
+        #state = (waypoint, int(deadline/15), inputs['light'], inputs['left'])
+        # experiment since we don't have a big reward for reaching destination
+        state = (waypoint, inputs['light'], inputs['left'], inputs['oncoming'])
         #state = (waypoint, inputs['light'], inputs['left'])
         return state
 
@@ -193,7 +204,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning=True, alpha=0.75)
+    agent = env.create_agent(LearningAgent, learning=True, alpha=0.5)
 
     ##############
     # Follow the driving agent
@@ -215,7 +226,7 @@ def run():
     # Flags:
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05
     #   n_test     - discrete number of testing trials to perform, default is 0
-    sim.run(n_test=10)
+    sim.run(n_test=10, tolerance= 0.01)
 
 
 if __name__ == '__main__':
