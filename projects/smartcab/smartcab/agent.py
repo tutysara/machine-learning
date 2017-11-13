@@ -144,7 +144,7 @@ class LearningAgent(Agent):
             # when there are more than one break ties randomly
             action = random.choice(actions)
             # select an entire random action epsilon number of times
-            if(random.random() <= self.epsilon):
+            if(random.random() < self.epsilon):
                 action = random.choice(self.valid_actions)
             #if self.epsilon == 0 and max_Q == 0.0:
             #    print "Invalid state seen", state
@@ -183,6 +183,9 @@ class LearningAgent(Agent):
         reward = self.env.act(self, action) # Receive a reward
         self.learn(state, action, reward)   # Q-learn
 
+        if self.epsilon==0 and self.alpha==0:
+            if reward < -3:
+                print "agent did something wrong in state", state, " taking action ", action
         return
 
 

@@ -178,6 +178,9 @@ class Simulator(object):
                             self.pause()
 
                     # Update environment
+                    if testing:
+                        #self.update_delay = 2
+                        pass
                     if self.current_time - self.last_updated >= self.update_delay:
                         self.env.step()
                         self.last_updated = self.current_time
