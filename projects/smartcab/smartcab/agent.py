@@ -136,15 +136,16 @@ class LearningAgent(Agent):
         if not self.learning:
             action = random.choice(self.valid_actions)
         else:
-            # agent is learning choose action that has maximum Q value
-            max_Q = self.get_maxQ(state)
-            action_qs = self.Q[state]
-            # choose action(s) having max q value
-            actions = [k for k, v in action_qs.items() if v == max_Q]
-            # when there are more than one break ties randomly
-            action = random.choice(actions)
+            if(random.random() > self.epsilon):
+                # agent is learning choose action that has maximum Q value
+                max_Q = self.get_maxQ(state)
+                action_qs = self.Q[state]
+                # choose action(s) having max q value
+                actions = [k for k, v in action_qs.items() if v == max_Q]
+                # when there are more than one break ties randomly
+                action = random.choice(actions)
             # select an entire random action epsilon number of times
-            if(random.random() < self.epsilon):
+            else:
                 action = random.choice(self.valid_actions)
             #if self.epsilon == 0 and max_Q == 0.0:
             #    print "Invalid state seen", state
@@ -161,14 +162,14 @@ class LearningAgent(Agent):
         ###########
         # When learning, implement the value iteration update rule
         #   Use only the learning rate 'alpha' (do not use the discount factor 'gamma')
-
-        # Q(s,a) = (1-å)*Q(s,a) + å*(r + gamma * max Q(s',a'))
-        max_q = self.get_maxQ(state)
-        #q_s = sum(self.Q[state].values())/len(self.Q[state]) # value of state, s
-        #q = (1-self.alpha)*q_s + self.alpha*(reward+  max_q)
-        q_s = self.Q[state][action]
-        q = (1-self.alpha) * q_s + self.alpha * (reward + 0)
-        self.Q[state][action] = q
+        if self.learning:
+            # Q(s,a) = (1-å)*Q(s,a) + å*(r + gamma * max Q(s',a'))
+            max_q = self.get_maxQ(state)
+            #q_s = sum(self.Q[state].values())/len(self.Q[state]) # value of state, s
+            #q = (1-self.alpha)*q_s + self.alpha*(reward+  max_q)
+            q_s = self.Q[state][action]
+            q = (1-self.alpha) * q_s + self.alpha * (reward + 0)
+            self.Q[state][action] = q
         return
 
 
@@ -222,7 +223,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, update_delay=0.01, display=False, log_metrics=True, optimized=True)
+    sim = Simulator(env, update_delay=0.01, display=True, log_metrics=True, optimized=True)
 
     ##############
     # Run the simulator
